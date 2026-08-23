@@ -1,0 +1,793 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#17142e">
+  <title>仙人微彩｜最佳結果計算機</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #100e22;
+      --bg-soft: #1b1737;
+      --panel: rgba(31, 26, 61, .89);
+      --panel-soft: rgba(40, 34, 77, .7);
+      --line: rgba(224, 188, 255, .19);
+      --text: #fff9ff;
+      --muted: #b9accb;
+      --gold: #ffd36f;
+      --gold-soft: #a87930;
+      --pink: #ff8bd4;
+      --blue: #82d9ff;
+      --green: #81e4bc;
+      --red: #ff9c9c;
+      --shadow: 0 24px 80px rgba(0, 0, 0, .31);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 8% 2%, rgba(161, 86, 196, .28), transparent 29%),
+        radial-gradient(circle at 94% 12%, rgba(55, 123, 194, .2), transparent 27%),
+        linear-gradient(160deg, #100e22 0%, #171536 58%, #0e0c1e 100%);
+      font-family: "Segoe UI", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+      line-height: 1.5;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .25;
+      background-image: radial-gradient(rgba(255, 211, 111, .28) 1px, transparent 1px);
+      background-size: 28px 28px;
+      mask-image: linear-gradient(to bottom, black, transparent 72%);
+    }
+
+    button { font: inherit; }
+
+    .page {
+      width: min(1080px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 50px;
+      position: relative;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(255, 211, 111, .54);
+      border-radius: 15px;
+      color: var(--gold);
+      background: rgba(122, 75, 126, .3);
+      font-size: 24px;
+      box-shadow: 0 0 28px rgba(255, 180, 96, .15);
+    }
+
+    .brand small {
+      display: block;
+      margin-bottom: 2px;
+      color: var(--gold);
+      font-size: 10px;
+      letter-spacing: .18em;
+      font-weight: 700;
+    }
+
+    .brand strong { display: block; font-size: 16px; letter-spacing: .04em; }
+
+    .mode-label {
+      padding: 7px 12px;
+      border: 1px solid rgba(255, 211, 111, .3);
+      border-radius: 999px;
+      color: var(--gold);
+      background: rgba(114, 77, 38, .18);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .hero { margin-bottom: 24px; }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      max-width: 730px;
+      margin-bottom: 9px;
+      font-size: clamp(30px, 5vw, 52px);
+      line-height: 1.08;
+      letter-spacing: -.04em;
+    }
+
+    .hero p {
+      max-width: 700px;
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.06fr) minmax(330px, .94fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: linear-gradient(145deg, rgba(40, 32, 77, .92), rgba(21, 19, 49, .9));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    .input-panel, .result-panel { padding: clamp(20px, 4vw, 30px); }
+    .result-panel { position: sticky; top: 18px; }
+
+    .eyebrow {
+      margin-bottom: 7px;
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .14em;
+    }
+
+    h2 { margin-bottom: 7px; font-size: 21px; letter-spacing: -.02em; }
+
+    .helper { margin-bottom: 19px; color: var(--muted); font-size: 13px; }
+
+    .grid-wrap {
+      padding: 14px;
+      border: 1px solid rgba(255, 211, 111, .2);
+      border-radius: 20px;
+      background: rgba(10, 8, 27, .34);
+    }
+
+    .cactpot-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 9px;
+      max-width: 440px;
+      margin: 0 auto;
+      aspect-ratio: 1;
+    }
+
+    .grid-cell {
+      position: relative;
+      min-width: 0;
+      min-height: 74px;
+      border: 1px solid rgba(224, 188, 255, .2);
+      border-radius: 16px;
+      color: var(--text);
+      background: linear-gradient(145deg, rgba(68, 52, 111, .76), rgba(33, 28, 68, .8));
+      cursor: pointer;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
+    }
+
+    .grid-cell:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 211, 111, .74);
+    }
+
+    .grid-cell:focus-visible,
+    .number-button:focus-visible,
+    .utility-button:focus-visible {
+      outline: 3px solid rgba(255, 211, 111, .86);
+      outline-offset: 2px;
+    }
+
+    .grid-cell.is-active {
+      border-color: var(--pink);
+      box-shadow: 0 0 0 2px rgba(255, 139, 212, .16), 0 0 24px rgba(255, 139, 212, .14);
+    }
+
+    .grid-cell.is-next {
+      border-color: var(--blue);
+      background: linear-gradient(145deg, rgba(45, 116, 150, .86), rgba(34, 46, 91, .9));
+      box-shadow: 0 0 0 2px rgba(130, 217, 255, .18), 0 0 26px rgba(130, 217, 255, .16);
+    }
+
+    .grid-cell.is-line {
+      border-color: var(--gold);
+      background: linear-gradient(145deg, rgba(142, 96, 48, .82), rgba(74, 48, 78, .86));
+      box-shadow: 0 0 0 2px rgba(255, 211, 111, .15), 0 0 25px rgba(255, 182, 81, .13);
+    }
+
+    .cell-value {
+      display: block;
+      font-size: clamp(28px, 7vw, 43px);
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .cell-value.is-empty { color: rgba(255, 249, 255, .38); }
+
+    .cell-position {
+      position: absolute;
+      right: 9px;
+      bottom: 7px;
+      color: rgba(255, 249, 255, .52);
+      font-size: 10px;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .legend span { display: inline-flex; align-items: center; gap: 5px; }
+    .legend i { width: 9px; height: 9px; border-radius: 3px; display: inline-block; }
+    .legend .legend-next { background: var(--blue); }
+    .legend .legend-line { background: var(--gold); }
+    .legend .legend-active { background: var(--pink); }
+
+    .input-status {
+      min-height: 21px;
+      margin: 13px 2px 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .input-status.is-error { color: var(--red); }
+
+    .number-pad {
+      display: grid;
+      grid-template-columns: repeat(9, minmax(0, 1fr));
+      gap: 6px;
+      margin-top: 14px;
+    }
+
+    .number-button {
+      min-height: 40px;
+      border: 1px solid rgba(224, 188, 255, .2);
+      border-radius: 10px;
+      color: var(--text);
+      background: rgba(51, 41, 92, .74);
+      cursor: pointer;
+      font-weight: 700;
+      transition: border-color .18s ease, background .18s ease, transform .18s ease;
+    }
+
+    .number-button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      border-color: var(--gold);
+      background: rgba(113, 75, 91, .72);
+    }
+
+    .number-button:disabled { cursor: not-allowed; opacity: .27; }
+
+    .pad-actions { display: flex; justify-content: flex-end; margin-top: 9px; }
+
+    .utility-button {
+      padding: 7px 10px;
+      border: 1px solid rgba(185, 172, 203, .28);
+      border-radius: 9px;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      font-size: 11px;
+    }
+
+    .utility-button:hover { color: var(--text); border-color: rgba(255, 211, 111, .58); }
+
+    .result-kicker { color: var(--muted); font-size: 13px; }
+
+    .result-headline {
+      min-height: 78px;
+      margin: 7px 0 6px;
+      color: var(--gold);
+      font-size: clamp(28px, 5vw, 47px);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -.04em;
+    }
+
+    .result-title { min-height: 28px; margin-bottom: 9px; font-size: 19px; font-weight: 700; }
+    .result-detail { min-height: 46px; margin-bottom: 20px; color: var(--muted); font-size: 13px; }
+
+    .metric-strip {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 21px;
+      padding: 12px 14px;
+      border: 1px solid rgba(129, 228, 188, .18);
+      border-radius: 14px;
+      background: rgba(38, 93, 88, .16);
+    }
+
+    .metric-strip span { color: var(--muted); font-size: 11px; }
+    .metric-strip strong { color: var(--green); font-size: 17px; }
+
+    .line-analysis { padding-top: 19px; border-top: 1px solid var(--line); }
+
+    .section-heading {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 11px;
+    }
+
+    .section-heading h3 { margin: 0; font-size: 15px; }
+    .section-heading span { color: var(--muted); font-size: 11px; }
+
+    .line-list { display: grid; gap: 6px; }
+
+    .line-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 10px;
+      border: 1px solid rgba(224, 188, 255, .12);
+      border-radius: 11px;
+      background: rgba(12, 10, 31, .27);
+    }
+
+    .line-row.is-best {
+      border-color: rgba(255, 211, 111, .68);
+      background: rgba(122, 80, 46, .3);
+    }
+
+    .line-name { font-size: 12px; font-weight: 600; }
+    .line-expected { color: var(--green); font-size: 12px; font-weight: 700; white-space: nowrap; }
+    .line-max { color: var(--muted); font-size: 10px; white-space: nowrap; }
+
+    .line-placeholder {
+      padding: 14px 12px;
+      border: 1px dashed rgba(224, 188, 255, .22);
+      border-radius: 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    details { margin-top: 19px; padding-top: 15px; border-top: 1px solid var(--line); }
+    summary { color: var(--muted); cursor: pointer; font-size: 12px; }
+    details p { margin: 11px 0 0; color: var(--muted); font-size: 12px; }
+
+    .payout-table {
+      width: 100%;
+      margin-top: 12px;
+      border-collapse: collapse;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .payout-table th, .payout-table td { padding: 6px 4px; border-bottom: 1px solid rgba(224, 188, 255, .12); text-align: right; }
+    .payout-table th { color: var(--gold); font-weight: 600; }
+
+    footer { margin-top: 25px; color: rgba(185, 172, 203, .67); font-size: 11px; text-align: center; }
+
+    @media (max-width: 820px) {
+      .layout { grid-template-columns: 1fr; }
+      .result-panel { position: static; }
+    }
+
+    @media (max-width: 520px) {
+      .page { width: min(100% - 22px, 470px); padding-top: 17px; }
+      .topbar { margin-bottom: 22px; }
+      .brand-mark { width: 38px; height: 38px; border-radius: 13px; }
+      .brand strong { font-size: 14px; }
+      .mode-label { padding: 6px 9px; font-size: 11px; }
+      h1 { font-size: 34px; }
+      .hero p { font-size: 13px; }
+      .input-panel, .result-panel { border-radius: 20px; padding: 18px; }
+      .grid-wrap { padding: 10px; }
+      .cactpot-grid { gap: 7px; }
+      .grid-cell { min-height: 67px; border-radius: 13px; }
+      .cell-position { right: 7px; bottom: 5px; }
+      .number-pad { gap: 5px; }
+      .number-button { min-height: 38px; }
+      .line-row { grid-template-columns: minmax(0, 1fr) auto; }
+      .line-max { grid-column: 2; grid-row: 1; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">✦</div>
+        <div>
+          <small>GOLD SAUCER NOTES</small>
+          <strong>仙人微彩</strong>
+        </div>
+      </div>
+      <div class="mode-label">最佳結果計算機</div>
+    </header>
+
+    <section class="hero" aria-labelledby="page-title">
+      <h1 id="page-title">下一格刮哪裡？</h1>
+      <p>點選九宮格，再輸入目前已刮出的數字。計算機會用「長期期望獎金最高」的策略，告訴你下一格該刮哪裡；四個數字齊後，再建議最佳路線。</p>
+    </section>
+
+    <div class="layout">
+      <section class="panel input-panel" aria-labelledby="input-title">
+        <div class="eyebrow">STEP 01</div>
+        <h2 id="input-title">輸入已刮出的數字</h2>
+        <p class="helper">先輸入遊戲一開始顯示的數字。之後每刮開一格，就點該格並輸入新數字；1～9 不會重複。</p>
+
+        <div class="grid-wrap">
+          <div class="cactpot-grid" id="cactpotGrid" aria-label="仙人微彩九宮格">
+            <button class="grid-cell" type="button" data-cell="0" aria-label="左上格，尚未輸入" aria-pressed="false"><span class="cell-value is-empty">?</span><span class="cell-position">左上</span></button>
+            <button class="grid-cell" type="button" data-cell="1" aria-label="上中格，尚未輸入" aria-pressed="false"><span class="cell-value is-empty">?</span><span class="cell-position">上中</span></button>
+            <button class="grid-cell" type="button" data-cell="2" aria-label="右上格，尚未輸入" aria-pressed="false"><span class="cell-value is-empty">?</span><span class="cell-position">右上</span></button>
+            <button class="grid-cell" type="button" data-cell="3" aria-label="左中格，尚未輸入" aria-pressed="false"><span class="cell-value is-empty">?</span><span class="cell-position">左中</span></button>
+            <button class="grid-cell" type="button" data-cell="4" aria-label="中央格，尚未輸入" aria-pressed="false"><span class="cell-value is-empty">?</span><span class="cell-position">中央</span></button>
+            <button class="grid-cell" type="button" data-cell="5" aria-label="右中格，尚未輸入" aria-pressed="false"><span class="cell-value is-empty">?</span><span class="cell-position">右中</span></button>
+            <button class="grid-cell" type="button" data-cell="6" aria-label="左下格，尚未輸入" aria-pressed="false"><span class="cell-value is-empty">?</span><span class="cell-position">左下</span></button>
+            <button class="grid-cell" type="button" data-cell="7" aria-label="下中格，尚未輸入" aria-pressed="false"><span class="cell-value is-empty">?</span><span class="cell-position">下中</span></button>
+            <button class="grid-cell" type="button" data-cell="8" aria-label="右下格，尚未輸入" aria-pressed="false"><span class="cell-value is-empty">?</span><span class="cell-position">右下</span></button>
+          </div>
+          <div class="legend" aria-label="圖例">
+            <span><i class="legend-active"></i>目前選取</span>
+            <span><i class="legend-next"></i>建議下一格</span>
+            <span><i class="legend-line"></i>建議路線</span>
+          </div>
+        </div>
+
+        <div class="input-status" id="inputStatus" aria-live="polite">請選一格，再輸入數字。</div>
+        <div class="number-pad" id="numberPad" aria-label="輸入數字"></div>
+        <div class="pad-actions"><button class="utility-button" id="clearCell" type="button">清除目前格</button></div>
+      </section>
+
+      <section class="panel result-panel" aria-labelledby="result-title">
+        <div class="eyebrow">STEP 02</div>
+        <div class="result-kicker" id="resultKicker">等待輸入已刮出的數字</div>
+        <div class="result-headline" id="resultHeadline" aria-live="polite">—</div>
+        <div class="result-title" id="resultTitle">先輸入第一個數字</div>
+        <p class="result-detail" id="resultDetail">計算機會在你輸入後，顯示下一步或最終選線建議。</p>
+
+        <div class="metric-strip">
+          <span>目前策略的期望獎金</span>
+          <strong id="expectedValue">—</strong>
+          <span>MGP</span>
+        </div>
+
+        <div class="line-analysis">
+          <div class="section-heading">
+            <h3>路線分析</h3>
+            <span>期望值／最高可能</span>
+          </div>
+          <div class="line-list" id="lineList">
+            <div class="line-placeholder">輸入4個已刮出的數字後，這裡會列出8條路線的結果。</div>
+          </div>
+        </div>
+
+        <details>
+          <summary>獎金表（總和 → MGP）</summary>
+          <table class="payout-table">
+            <thead><tr><th>總和</th><th>獎金</th><th>總和</th><th>獎金</th></tr></thead>
+            <tbody>
+              <tr><td>6</td><td>10,000</td><td>16</td><td>72</td></tr>
+              <tr><td>7</td><td>36</td><td>17</td><td>180</td></tr>
+              <tr><td>8</td><td>720</td><td>18</td><td>119</td></tr>
+              <tr><td>9</td><td>360</td><td>19</td><td>36</td></tr>
+              <tr><td>10</td><td>80</td><td>20</td><td>306</td></tr>
+              <tr><td>11</td><td>252</td><td>21</td><td>1,080</td></tr>
+              <tr><td>12</td><td>108</td><td>22</td><td>144</td></tr>
+              <tr><td>13</td><td>72</td><td>23</td><td>1,800</td></tr>
+              <tr><td>14</td><td>54</td><td>24</td><td>3,600</td></tr>
+              <tr><td>15</td><td>180</td><td></td><td></td></tr>
+            </tbody>
+          </table>
+        </details>
+
+        <button class="utility-button" id="resetButton" type="button" style="width:100%; margin-top:17px;">全部清除</button>
+      </section>
+    </div>
+
+    <footer>仙人微彩：1～9 各出現一次；先刮開3格，加上初始顯示格共4格，再選一條橫線、直線或斜線。</footer>
+  </main>
+
+  <script>
+    (() => {
+      const PAYOUTS = Object.freeze({
+        6: 10000, 7: 36, 8: 720, 9: 360, 10: 80,
+        11: 252, 12: 108, 13: 72, 14: 54, 15: 180,
+        16: 72, 17: 180, 18: 119, 19: 36, 20: 306,
+        21: 1080, 22: 144, 23: 1800, 24: 3600
+      });
+
+      const LINES = [
+        { name: '上排', cells: [0, 1, 2] },
+        { name: '中排', cells: [3, 4, 5] },
+        { name: '下排', cells: [6, 7, 8] },
+        { name: '左列', cells: [0, 3, 6] },
+        { name: '中列', cells: [1, 4, 7] },
+        { name: '右列', cells: [2, 5, 8] },
+        { name: '左上 ↘ 右下', cells: [0, 4, 8] },
+        { name: '右上 ↙ 左下', cells: [2, 4, 6] }
+      ];
+
+      const CELL_NAMES = ['左上', '上中', '右上', '左中', '中央', '右中', '左下', '下中', '右下'];
+      const state = Array(9).fill(0);
+      const cellButtons = [...document.querySelectorAll('[data-cell]')];
+      const numberPad = document.getElementById('numberPad');
+      const inputStatus = document.getElementById('inputStatus');
+      const resultKicker = document.getElementById('resultKicker');
+      const resultHeadline = document.getElementById('resultHeadline');
+      const resultTitle = document.getElementById('resultTitle');
+      const resultDetail = document.getElementById('resultDetail');
+      const expectedValue = document.getElementById('expectedValue');
+      const lineList = document.getElementById('lineList');
+      const clearCellButton = document.getElementById('clearCell');
+      const resetButton = document.getElementById('resetButton');
+      let selectedCell = 0;
+      let memo = new Map();
+
+      const formatMgp = (value) => Number.isInteger(value)
+        ? value.toLocaleString('zh-Hant-TW')
+        : value.toLocaleString('zh-Hant-TW', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+      const payoutForSum = (sum) => PAYOUTS[sum] || 0;
+
+      function remainingNumbers(values) {
+        const used = new Set(values.filter(Boolean));
+        return [1, 2, 3, 4, 5, 6, 7, 8, 9].filter((number) => !used.has(number));
+      }
+
+      function lineAnalysis(values, line) {
+        const unknownCells = line.cells.filter((cell) => values[cell] === 0);
+        const fixedSum = line.cells.reduce((total, cell) => total + (values[cell] || 0), 0);
+        const remaining = remainingNumbers(values);
+
+        if (unknownCells.length === 0) {
+          const payout = payoutForSum(fixedSum);
+          return { expected: payout, max: payout, possible: [payout], sum: fixedSum };
+        }
+
+        let total = 0;
+        let count = 0;
+        let max = 0;
+        const possible = new Set();
+
+        function enumerate(slot, used, sum) {
+          if (slot === unknownCells.length) {
+            const payout = payoutForSum(sum);
+            total += payout;
+            count += 1;
+            max = Math.max(max, payout);
+            possible.add(payout);
+            return;
+          }
+          remaining.forEach((number) => {
+            if (used.has(number)) return;
+            used.add(number);
+            enumerate(slot + 1, used, sum + number);
+            used.delete(number);
+          });
+        }
+
+        enumerate(0, new Set(), fixedSum);
+        return { expected: total / count, max, possible: [...possible].sort((a, b) => b - a), sum: null };
+      }
+
+      function analyzeAllLines(values) {
+        const analyses = LINES.map((line) => ({ ...line, ...lineAnalysis(values, line) }));
+        const bestExpected = Math.max(...analyses.map((line) => line.expected));
+        const bestLines = analyses.filter((line) => Math.abs(line.expected - bestExpected) < 1e-9);
+        return { analyses, bestLines, bestExpected };
+      }
+
+      function solveNext(values, stepsLeft) {
+        const key = `${values.join(',')}|${stepsLeft}`;
+        if (memo.has(key)) return memo.get(key);
+
+        if (stepsLeft === 0) {
+          const finalResult = analyzeAllLines(values);
+          const result = { value: finalResult.bestExpected, cells: [], finalResult };
+          memo.set(key, result);
+          return result;
+        }
+
+        const unknownCells = values.map((value, index) => value === 0 ? index : -1).filter((index) => index >= 0);
+        const remaining = remainingNumbers(values);
+        let bestValue = -Infinity;
+        let bestCells = [];
+
+        unknownCells.forEach((cell) => {
+          const average = remaining.reduce((total, number) => {
+            const nextValues = values.slice();
+            nextValues[cell] = number;
+            return total + solveNext(nextValues, stepsLeft - 1).value / remaining.length;
+          }, 0);
+
+          if (average > bestValue + 1e-9) {
+            bestValue = average;
+            bestCells = [cell];
+          } else if (Math.abs(average - bestValue) < 1e-9) {
+            bestCells.push(cell);
+          }
+        });
+
+        const result = { value: bestValue, cells: bestCells };
+        memo.set(key, result);
+        return result;
+      }
+
+      function setStatus(message, isError = false) {
+        inputStatus.textContent = message;
+        inputStatus.classList.toggle('is-error', isError);
+      }
+
+      function updatePad() {
+        const usedElsewhere = new Set(state.filter((value, index) => value && index !== selectedCell));
+        const currentValue = state[selectedCell];
+        const knownCount = state.filter(Boolean).length;
+        [...numberPad.querySelectorAll('[data-number]')].forEach((button) => {
+          const number = Number(button.dataset.number);
+          button.disabled = usedElsewhere.has(number) || (knownCount >= 4 && currentValue === 0);
+          button.setAttribute('aria-pressed', String(number === currentValue));
+        });
+      }
+
+      function clearHighlights() {
+        cellButtons.forEach((button) => {
+          button.classList.remove('is-next', 'is-line');
+        });
+      }
+
+      function renderGrid(nextCells = [], lineCells = []) {
+        const nextSet = new Set(nextCells);
+        const lineSet = new Set(lineCells);
+        cellButtons.forEach((button, index) => {
+          const value = state[index];
+          const valueElement = button.querySelector('.cell-value');
+          valueElement.textContent = value || '?';
+          valueElement.classList.toggle('is-empty', value === 0);
+          button.classList.toggle('is-active', index === selectedCell);
+          button.classList.toggle('is-next', nextSet.has(index));
+          button.classList.toggle('is-line', lineSet.has(index));
+          button.setAttribute('aria-pressed', String(index === selectedCell));
+          button.setAttribute('aria-label', `${CELL_NAMES[index]}格，${value || '尚未輸入'}`);
+        });
+        updatePad();
+      }
+
+      function renderLineList(analyses, bestLines) {
+        if (!analyses.length) {
+          lineList.innerHTML = '<div class="line-placeholder">輸入4個已刮出的數字後，這裡會列出8條路線的結果。</div>';
+          return;
+        }
+        const bestNames = new Set(bestLines.map((line) => line.name));
+        lineList.innerHTML = analyses.map((line) => `
+          <div class="line-row${bestNames.has(line.name) ? ' is-best' : ''}">
+            <span class="line-name">${bestNames.has(line.name) ? '★ ' : ''}${line.name}</span>
+            <span class="line-expected">${formatMgp(line.expected)} MGP</span>
+            <span class="line-max">最高 ${formatMgp(line.max)}</span>
+          </div>
+        `).join('');
+      }
+
+      function calculate() {
+        memo = new Map();
+        clearHighlights();
+        const knownCount = state.filter(Boolean).length;
+        if (knownCount === 0) {
+          resultKicker.textContent = '等待輸入已刮出的數字';
+          resultHeadline.textContent = '—';
+          resultTitle.textContent = '先輸入第一個數字';
+          resultDetail.textContent = '計算機會在你輸入後，顯示下一步或最終選線建議。';
+          expectedValue.textContent = '—';
+          renderLineList([], []);
+          renderGrid();
+          return;
+        }
+
+        if (knownCount < 4) {
+          const stepsLeft = 4 - knownCount;
+          const recommendation = solveNext(state, stepsLeft);
+          const names = recommendation.cells.map((cell) => `第${cell + 1}格（${CELL_NAMES[cell]}）`);
+          renderGrid(recommendation.cells, []);
+          resultKicker.textContent = `目前已知 ${knownCount} 個數字，還要刮 ${stepsLeft} 格`;
+          resultHeadline.textContent = names.length === 1 ? names[0] : `${names.length} 格均可`;
+          resultTitle.textContent = '下一格建議';
+          resultDetail.textContent = names.length === 1
+            ? `以長期期望獎金最高為標準，建議刮開${names[0]}。`
+            : `這些位置的長期期望值相同，可任選：${names.join('、')}。`;
+          expectedValue.textContent = formatMgp(recommendation.value);
+          renderLineList([], []);
+          setStatus(`目前已輸入 ${knownCount}/4 個數字，選取中的格子是「${CELL_NAMES[selectedCell]}」。`);
+          return;
+        }
+
+        const finalResult = analyzeAllLines(state);
+        const bestNames = finalResult.bestLines.map((line) => line.name);
+        const bestCells = [...new Set(finalResult.bestLines.flatMap((line) => line.cells))];
+        renderGrid([], bestCells);
+        resultKicker.textContent = '四個數字已揭示，現在選擇一條線';
+        resultHeadline.textContent = bestNames.length === 1 ? bestNames[0] : `${bestNames.length} 條均可`;
+        resultTitle.textContent = '最佳結果建議';
+        resultDetail.textContent = bestNames.length === 1
+          ? `建議選「${bestNames[0]}」，它的期望獎金最高。`
+          : `以下路線的期望獎金相同，可任選：${bestNames.join('、')}。`;
+        expectedValue.textContent = formatMgp(finalResult.bestExpected);
+        renderLineList(finalResult.analyses, finalResult.bestLines);
+        setStatus('已輸入4/4個數字；金色格線表示建議路線。');
+      }
+
+      function selectCell(index) {
+        selectedCell = index;
+        calculate();
+        const valueText = state[index] ? `目前是 ${state[index]}` : '尚未輸入';
+        setStatus(`已選取「${CELL_NAMES[index]}」格，${valueText}。`);
+      }
+
+      function setNumber(number) {
+        const duplicate = state.some((value, index) => value === number && index !== selectedCell);
+        if (duplicate) {
+          setStatus(`數字 ${number} 已經輸入在其他格子，1～9 不可重複。`, true);
+          return;
+        }
+        if (state[selectedCell] === 0 && state.filter(Boolean).length >= 4) {
+          setStatus('已輸入4個數字；請先修改或清除其中一格。', true);
+          return;
+        }
+        state[selectedCell] = number;
+        const nextBlank = state.findIndex((value) => value === 0);
+        if (nextBlank >= 0) selectedCell = nextBlank;
+        calculate();
+      }
+
+      function clearSelectedCell() {
+        state[selectedCell] = 0;
+        calculate();
+        setStatus(`已清除「${CELL_NAMES[selectedCell]}」格，請重新輸入。`);
+      }
+
+      function reset() {
+        state.fill(0);
+        selectedCell = 0;
+        calculate();
+        setStatus('已全部清除，請選一格並輸入第一個數字。');
+      }
+
+      for (let number = 1; number <= 9; number += 1) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'number-button';
+        button.dataset.number = String(number);
+        button.textContent = String(number);
+        button.setAttribute('aria-label', `輸入數字 ${number}`);
+        button.addEventListener('click', () => setNumber(number));
+        numberPad.appendChild(button);
+      }
+
+      cellButtons.forEach((button) => {
+        button.addEventListener('click', () => selectCell(Number(button.dataset.cell)));
+      });
+      clearCellButton.addEventListener('click', clearSelectedCell);
+      resetButton.addEventListener('click', reset);
+      calculate();
+    })();
+  </script>
+</body>
+</html>
+
+
