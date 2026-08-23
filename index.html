@@ -1,0 +1,827 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071a2c">
+  <title>鯊魚拔牙｜快速查詢</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #061522;
+      --bg-soft: #0b2236;
+      --panel: rgba(12, 38, 59, .82);
+      --panel-strong: #102f48;
+      --line: rgba(149, 221, 231, .17);
+      --text: #edfaff;
+      --muted: #9dbbc5;
+      --teal: #63e4df;
+      --teal-deep: #1c8f9a;
+      --coral: #ff8b73;
+      --coral-deep: #a5444e;
+      --yellow: #ffe08a;
+      --shadow: 0 22px 70px rgba(0, 0, 0, .28);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 8% 4%, rgba(56, 153, 177, .21), transparent 30%),
+        radial-gradient(circle at 92% 14%, rgba(36, 102, 145, .19), transparent 28%),
+        linear-gradient(160deg, #061522 0%, #09243a 58%, #061421 100%);
+      font-family: "Segoe UI", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+      line-height: 1.5;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .28;
+      background-image: radial-gradient(rgba(154, 233, 239, .28) 1px, transparent 1px);
+      background-size: 26px 26px;
+      mask-image: linear-gradient(to bottom, black, transparent 74%);
+    }
+
+    button { font: inherit; }
+
+    .page {
+      width: min(1060px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 48px;
+      position: relative;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(99, 228, 223, .45);
+      border-radius: 14px;
+      color: var(--teal);
+      background: rgba(20, 100, 117, .25);
+      font-size: 22px;
+      box-shadow: 0 0 24px rgba(65, 215, 216, .13);
+    }
+
+    .brand small {
+      display: block;
+      margin-bottom: 2px;
+      color: var(--teal);
+      font-size: 11px;
+      letter-spacing: .16em;
+      font-weight: 700;
+    }
+
+    .brand strong {
+      display: block;
+      font-size: 16px;
+      letter-spacing: .04em;
+    }
+
+    .mode-label {
+      padding: 7px 12px;
+      border: 1px solid rgba(99, 228, 223, .26);
+      border-radius: 999px;
+      color: var(--teal);
+      background: rgba(16, 90, 108, .2);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .hero { margin-bottom: 24px; }
+
+    h1, h2, p { margin-top: 0; }
+
+    h1 {
+      max-width: 650px;
+      margin-bottom: 9px;
+      font-size: clamp(30px, 5vw, 52px);
+      line-height: 1.08;
+      letter-spacing: -.035em;
+    }
+
+    .hero p {
+      max-width: 610px;
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.12fr) minmax(320px, .88fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: linear-gradient(145deg, rgba(15, 49, 73, .88), rgba(8, 29, 47, .87));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    .picker-panel { padding: clamp(20px, 4vw, 30px); }
+
+    .result-panel {
+      padding: clamp(20px, 4vw, 30px);
+      position: sticky;
+      top: 18px;
+      overflow: hidden;
+    }
+
+    .eyebrow {
+      margin-bottom: 7px;
+      color: var(--teal);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin-bottom: 7px;
+      font-size: 21px;
+      letter-spacing: -.02em;
+    }
+
+    .helper {
+      margin-bottom: 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .direction {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 13px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .direction-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(99, 228, 223, .42), transparent);
+    }
+
+    .tooth-grid {
+      display: grid;
+      grid-template-columns: repeat(10, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .tooth {
+      min-height: 68px;
+      padding: 8px 4px 7px;
+      border: 1px solid rgba(150, 220, 230, .19);
+      border-radius: 13px;
+      color: var(--text);
+      background: rgba(7, 30, 48, .62);
+      cursor: pointer;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
+    }
+
+    .tooth:hover {
+      transform: translateY(-2px);
+      border-color: rgba(99, 228, 223, .65);
+      background: rgba(18, 78, 96, .57);
+    }
+
+    .tooth:focus-visible,
+    .response-button:focus-visible,
+    .reset-button:focus-visible {
+      outline: 3px solid rgba(255, 224, 138, .8);
+      outline-offset: 2px;
+    }
+
+    .tooth.is-selected {
+      border-color: var(--coral);
+      background: linear-gradient(155deg, rgba(172, 67, 77, .74), rgba(105, 47, 62, .74));
+      box-shadow: 0 0 0 2px rgba(255, 139, 115, .16), 0 0 25px rgba(255, 113, 95, .16);
+    }
+
+    .tooth-graphic {
+      display: block;
+      width: 24px;
+      height: 25px;
+      margin: 0 auto 5px;
+      border: 2px solid currentColor;
+      border-top: 0;
+      border-radius: 5px 5px 9px 9px;
+      color: #c8f4f1;
+      transform: perspective(20px) rotateX(-7deg);
+      opacity: .94;
+    }
+
+    .tooth.is-selected .tooth-graphic { color: #ffd2ba; }
+
+    .tooth-number {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .tooth-label {
+      display: block;
+      margin-top: 1px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .tooth.is-selected .tooth-label { color: #ffe1d2; }
+
+    .selected-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .selected-summary strong { color: var(--coral); font-size: 16px; }
+
+    .mobile-quick-result { display: none; }
+
+    .result-panel::after {
+      content: "";
+      position: absolute;
+      width: 210px;
+      height: 210px;
+      right: -110px;
+      top: -120px;
+      border-radius: 50%;
+      background: rgba(99, 228, 223, .12);
+      filter: blur(3px);
+      pointer-events: none;
+    }
+
+    .result-kicker { color: var(--muted); font-size: 13px; }
+
+    .result-number {
+      min-height: 94px;
+      margin: 7px 0 5px;
+      color: var(--teal);
+      font-size: clamp(58px, 9vw, 88px);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -.06em;
+    }
+
+    .result-number.is-warning { color: var(--yellow); font-size: clamp(40px, 6vw, 60px); line-height: 1.12; }
+
+    .result-title {
+      min-height: 31px;
+      margin-bottom: 10px;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .result-detail {
+      min-height: 44px;
+      margin-bottom: 22px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .response-section {
+      padding-top: 19px;
+      border-top: 1px solid var(--line);
+    }
+
+    .npc-first-section {
+      margin-top: 22px;
+      padding-top: 19px;
+      border-top: 1px solid var(--line);
+    }
+
+    .npc-first-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .npc-first-card {
+      min-height: 104px;
+      padding: 11px 9px;
+      border: 1px solid rgba(99, 228, 223, .2);
+      border-radius: 13px;
+      background: rgba(9, 46, 64, .54);
+      text-align: center;
+    }
+
+    .npc-first-card .card-label {
+      display: block;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .npc-first-card .npc-count {
+      display: block;
+      margin: 4px 0 7px;
+      color: var(--yellow);
+      font-size: 19px;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+
+    .npc-first-card .answer-label {
+      display: block;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .npc-first-card .answer-value {
+      display: block;
+      margin-top: 2px;
+      color: var(--teal);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    .npc-first-card.is-danger .answer-value { color: var(--coral); font-size: 12px; }
+
+    .npc-first-note {
+      min-height: 35px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .response-heading {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 11px;
+    }
+
+    .response-heading h3 { margin: 0; font-size: 15px; }
+    .response-heading span { color: var(--muted); font-size: 11px; }
+
+    .response-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .response-button {
+      min-height: 70px;
+      padding: 9px 5px;
+      border: 1px solid rgba(99, 228, 223, .24);
+      border-radius: 13px;
+      color: var(--text);
+      background: rgba(9, 46, 64, .64);
+      cursor: pointer;
+      transition: border-color .18s ease, background .18s ease, transform .18s ease;
+    }
+
+    .response-button:hover,
+    .response-button.is-active {
+      transform: translateY(-2px);
+      border-color: var(--teal);
+      background: rgba(23, 111, 123, .52);
+    }
+
+    .response-button strong { display: block; color: var(--yellow); font-size: 22px; line-height: 1.1; }
+    .response-button span { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; }
+
+    .response-answer {
+      min-height: 54px;
+      margin-top: 12px;
+      padding: 13px 14px;
+      border-left: 3px solid var(--teal);
+      border-radius: 0 12px 12px 0;
+      color: var(--text);
+      background: rgba(2, 17, 29, .34);
+      font-size: 13px;
+    }
+
+    .response-answer strong { color: var(--teal); font-size: 17px; }
+
+    .reset-button {
+      width: 100%;
+      margin-top: 17px;
+      padding: 10px 12px;
+      border: 1px solid rgba(157, 187, 197, .25);
+      border-radius: 11px;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .reset-button:hover { color: var(--text); border-color: rgba(157, 187, 197, .5); }
+
+    .rule-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-top: 18px;
+      padding: 15px 17px;
+      border: 1px solid rgba(255, 224, 138, .18);
+      border-radius: 16px;
+      background: rgba(94, 80, 39, .14);
+    }
+
+    .rule-strip strong { display: block; color: var(--yellow); font-size: 14px; }
+    .rule-strip span { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; }
+
+    details {
+      margin-top: 17px;
+      border-top: 1px solid var(--line);
+      padding-top: 15px;
+    }
+
+    summary {
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    details p { margin: 11px 0 0; color: var(--muted); font-size: 12px; }
+
+    footer {
+      margin-top: 25px;
+      color: rgba(157, 187, 197, .67);
+      font-size: 11px;
+      text-align: center;
+    }
+
+    @media (max-width: 820px) {
+      .layout { grid-template-columns: 1fr; }
+      .result-panel { position: static; }
+
+      .mobile-quick-result {
+        display: grid;
+        gap: 10px;
+        position: sticky;
+        top: 10px;
+        z-index: 3;
+        margin: 0 0 14px;
+        padding: 12px 13px;
+        border: 1px solid rgba(99, 228, 223, .35);
+        border-radius: 14px;
+        background: rgba(7, 30, 48, .96);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, .25);
+      }
+
+      .mobile-quick-main,
+      .mobile-quick-npc {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        min-width: 0;
+      }
+
+      .mobile-quick-main > span:first-child,
+      .mobile-quick-npc > span:first-child {
+        flex: 0 0 auto;
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .mobile-quick-main strong {
+        flex: 0 0 auto;
+        color: var(--teal);
+        font-size: 22px;
+        line-height: 1;
+      }
+
+      .mobile-quick-main > span:last-child {
+        min-width: 0;
+        overflow: hidden;
+        color: var(--text);
+        font-size: 12px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .mobile-quick-npc {
+        padding-top: 9px;
+        border-top: 1px solid var(--line);
+      }
+
+      .mobile-quick-npc strong {
+        color: var(--yellow);
+        font-size: 11px;
+        font-weight: 600;
+        line-height: 1.45;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .page { width: min(100% - 22px, 470px); padding-top: 17px; }
+      .topbar { margin-bottom: 22px; }
+      .brand-mark { width: 38px; height: 38px; border-radius: 12px; }
+      .brand strong { font-size: 14px; }
+      .mode-label { padding: 6px 9px; font-size: 11px; }
+      h1 { font-size: 34px; }
+      .hero p { font-size: 13px; }
+      .picker-panel, .result-panel { border-radius: 20px; padding: 18px; }
+      .tooth-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 7px; }
+      .tooth { min-height: 64px; }
+      .rule-strip { align-items: flex-start; flex-direction: column; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">◒</div>
+        <div>
+          <small>DIVE NOTES</small>
+          <strong>鯊魚拔牙小遊戲</strong>
+        </div>
+      </div>
+      <div class="mode-label">快速查詢模式</div>
+    </header>
+
+    <section class="hero" aria-labelledby="page-title">
+      <h1 id="page-title">這回合，拔幾顆？</h1>
+      <p>先選出會讓鯊魚合嘴的蛀牙位置，立刻查到你的第一步；之後只要記住「補到 4 顆」。</p>
+    </section>
+
+    <div class="layout">
+      <section class="panel picker-panel" aria-labelledby="picker-title">
+        <div class="eyebrow">STEP 01</div>
+        <h2 id="picker-title">選擇蛀牙位置</h2>
+        <p class="helper">從遊戲畫面左側、第一顆可拔的牙齒開始數。蛀牙本身就是第幾顆？</p>
+
+        <div class="direction" aria-label="拔牙方向提示">
+          <span>起點</span>
+          <span class="direction-line" aria-hidden="true"></span>
+          <span>拔牙順序：左 → 右</span>
+        </div>
+
+        <div class="mobile-quick-result" aria-live="polite">
+          <div class="mobile-quick-main">
+            <span>玩家先手</span>
+            <strong id="mobileResultNumber">—</strong>
+            <span id="mobileResultTitle">選蛀牙後顯示</span>
+          </div>
+          <div class="mobile-quick-npc">
+            <span>NPC 先攻</span>
+            <strong id="mobileNpcFirstSummary">選蛀牙後查看</strong>
+          </div>
+        </div>
+
+        <div class="tooth-grid" id="toothGrid" aria-label="20顆牙齒位置"></div>
+
+        <div class="selected-summary" aria-live="polite">
+          <span>目前選擇</span>
+          <strong id="selectedLabel">尚未選擇</strong>
+        </div>
+
+        <div class="rule-strip">
+          <div>
+            <strong>口訣：補到 4 顆</strong>
+            <span>NPC 拔 1／2／3 顆，你就拔 3／2／1 顆。</span>
+          </div>
+          <div aria-hidden="true">1＋3　2＋2　3＋1</div>
+        </div>
+
+        <details>
+          <summary>為什麼這樣能贏？</summary>
+          <p>每回合兩人合計拔掉 4 顆，就能把下一個回合的壓力留給 NPC。只要你每次都補到 4 顆，最後就會輪到 NPC 面對蛀牙。</p>
+        </details>
+      </section>
+
+      <section class="panel result-panel" aria-labelledby="result-title">
+        <div class="eyebrow">STEP 02</div>
+        <div class="result-kicker">玩家先手時，第一步拔</div>
+        <div class="result-number" id="resultNumber" aria-live="polite">—</div>
+        <div class="result-title" id="resultTitle">先選一顆蛀牙</div>
+        <p class="result-detail" id="resultDetail">選擇左側牙齒後，這裡會直接顯示答案。</p>
+
+        <div class="npc-first-section">
+          <div class="response-heading">
+            <h3>如果 NPC 先攻</h3>
+            <span>看他第一手後的回應</span>
+          </div>
+          <div class="npc-first-grid" id="npcFirstGrid" aria-live="polite">
+            <div class="npc-first-card">
+              <span class="card-label">請先選蛀牙</span>
+              <span class="npc-count">—</span>
+              <span class="answer-label">查詢結果</span>
+              <span class="answer-value">等待選擇</span>
+            </div>
+          </div>
+          <div class="npc-first-note" id="npcFirstNote">選擇蛀牙後，這裡會列出 NPC 先拔 1／2／3 顆時的三種結果。</div>
+        </div>
+
+        <div class="response-section">
+          <div class="response-heading">
+            <h3>進入循環後的回合</h3>
+            <span>之後只要補到 4 顆</span>
+          </div>
+          <div class="response-grid">
+            <button class="response-button" type="button" data-npc-move="1">
+              <strong>1 顆</strong>
+              <span>NPC 拔了</span>
+            </button>
+            <button class="response-button" type="button" data-npc-move="2">
+              <strong>2 顆</strong>
+              <span>NPC 拔了</span>
+            </button>
+            <button class="response-button" type="button" data-npc-move="3">
+              <strong>3 顆</strong>
+              <span>NPC 拔了</span>
+            </button>
+          </div>
+          <div class="response-answer" id="responseAnswer" aria-live="polite">先選一個 NPC 的拔牙數量。</div>
+        </div>
+
+        <button class="reset-button" id="resetButton" type="button">清除選擇</button>
+      </section>
+    </div>
+
+    <footer>本頁以遊戲內 20 顆牙齒、每回合可拔 1～3 顆的規則製作。</footer>
+  </main>
+
+  <script>
+    (() => {
+      const TOTAL_TEETH = 20;
+      const toothGrid = document.getElementById('toothGrid');
+      const selectedLabel = document.getElementById('selectedLabel');
+      const resultNumber = document.getElementById('resultNumber');
+      const resultTitle = document.getElementById('resultTitle');
+      const resultDetail = document.getElementById('resultDetail');
+      const mobileResultNumber = document.getElementById('mobileResultNumber');
+      const mobileResultTitle = document.getElementById('mobileResultTitle');
+      const mobileNpcFirstSummary = document.getElementById('mobileNpcFirstSummary');
+      const npcFirstGrid = document.getElementById('npcFirstGrid');
+      const npcFirstNote = document.getElementById('npcFirstNote');
+      const responseAnswer = document.getElementById('responseAnswer');
+      const resetButton = document.getElementById('resetButton');
+      const responseButtons = [...document.querySelectorAll('[data-npc-move]')];
+
+      let selectedPosition = null;
+
+      function renderNpcFirst(position) {
+        if (position === null) {
+          npcFirstGrid.innerHTML = `
+            <div class="npc-first-card">
+              <span class="card-label">請先選蛀牙</span>
+              <span class="npc-count">—</span>
+              <span class="answer-label">查詢結果</span>
+              <span class="answer-value">等待選擇</span>
+            </div>
+          `;
+          npcFirstNote.textContent = '選擇蛀牙後，這裡會列出 NPC 先拔 1／2／3 顆時的三種結果。';
+          mobileNpcFirstSummary.textContent = '選蛀牙後查看';
+          return;
+        }
+
+        const safeBefore = position - 1;
+        const summary = [];
+        npcFirstGrid.innerHTML = [1, 2, 3].map((npcMove) => {
+          if (npcMove > safeBefore) {
+            summary.push(`${npcMove}→你贏`);
+            return `
+              <div class="npc-first-card is-danger">
+                <span class="card-label">NPC 先拔</span>
+                <span class="npc-count">${npcMove} 顆</span>
+                <span class="answer-label">結果</span>
+                <span class="answer-value">NPC 會踩中蛀牙</span>
+              </div>
+            `;
+          }
+
+          const remaining = safeBefore - npcMove;
+          const playerMove = remaining % 4;
+          const answer = playerMove === 0 ? '無法保證勝利' : `你拔 ${playerMove} 顆`;
+          summary.push(playerMove === 0 ? `${npcMove}→無法保證` : `${npcMove}→${playerMove}顆`);
+          return `
+            <div class="npc-first-card${playerMove === 0 ? ' is-danger' : ''}">
+              <span class="card-label">NPC 先拔</span>
+              <span class="npc-count">${npcMove} 顆</span>
+              <span class="answer-label">你的回應</span>
+              <span class="answer-value">${answer}</span>
+            </div>
+          `;
+        }).join('');
+
+        npcFirstNote.textContent = '先看 NPC 實際拔了哪一欄，再照欄位回應；「無法保證勝利」代表 NPC 已取得有利局面。';
+        mobileNpcFirstSummary.textContent = summary.join('　');
+      }
+
+      function makeToothButton(position) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'tooth';
+        button.dataset.position = String(position);
+        button.setAttribute('aria-pressed', 'false');
+        button.setAttribute('aria-label', `選擇第 ${position} 顆蛀牙`);
+        button.innerHTML = `
+          <span class="tooth-graphic" aria-hidden="true"></span>
+          <span class="tooth-number">${position}</span>
+          <span class="tooth-label">第 ${position} 顆</span>
+        `;
+        button.addEventListener('click', () => selectTooth(position));
+        return button;
+      }
+
+      function selectTooth(position) {
+        selectedPosition = position;
+        [...toothGrid.children].forEach((button) => {
+          const isSelected = Number(button.dataset.position) === position;
+          button.classList.toggle('is-selected', isSelected);
+          button.setAttribute('aria-pressed', String(isSelected));
+        });
+
+        const safeBefore = position - 1;
+        const firstMove = safeBefore % 4;
+        selectedLabel.textContent = `第 ${position} 顆蛀牙`;
+        resultNumber.classList.remove('is-warning');
+        renderNpcFirst(position);
+
+        if (firstMove === 0) {
+          resultNumber.textContent = '—';
+          resultNumber.classList.add('is-warning');
+          resultTitle.textContent = '先手沒有保證勝法';
+          resultDetail.textContent = `蛀牙前有 ${safeBefore} 顆安全牙齒，剛好是 4 的倍數。等待 NPC 拔錯後，再用「補到 4 顆」反制。`;
+          mobileResultNumber.textContent = '—';
+          mobileResultTitle.textContent = '先手沒有保證勝法';
+        } else {
+          resultNumber.textContent = `${firstMove} 顆`;
+          resultTitle.textContent = '第一步就拔這個數量';
+          resultDetail.textContent = `蛀牙前有 ${safeBefore} 顆安全牙齒，先拔 ${firstMove} 顆後，會留下 ${safeBefore - firstMove} 顆，接著維持每輪合計 4 顆。`;
+          mobileResultNumber.textContent = `${firstMove} 顆`;
+          mobileResultTitle.textContent = '第一步就拔這個數量';
+        }
+      }
+
+      function showNpcResponse(move) {
+        const answer = 4 - move;
+        responseButtons.forEach((button) => {
+          button.classList.toggle('is-active', Number(button.dataset.npcMove) === move);
+        });
+        responseAnswer.innerHTML = `NPC 拔 <strong>${move} 顆</strong> → 你拔 <strong>${answer} 顆</strong>`;
+      }
+
+      function reset() {
+        selectedPosition = null;
+        [...toothGrid.children].forEach((button) => {
+          button.classList.remove('is-selected');
+          button.setAttribute('aria-pressed', 'false');
+        });
+        selectedLabel.textContent = '尚未選擇';
+        resultNumber.textContent = '—';
+        resultNumber.classList.remove('is-warning');
+        resultTitle.textContent = '先選一顆蛀牙';
+        resultDetail.textContent = '選擇左側牙齒後，這裡會直接顯示答案。';
+        mobileResultNumber.textContent = '—';
+        mobileResultTitle.textContent = '選蛀牙後顯示';
+        renderNpcFirst(null);
+        responseButtons.forEach((button) => button.classList.remove('is-active'));
+        responseAnswer.textContent = '先選一個 NPC 的拔牙數量。';
+      }
+
+      for (let position = 1; position <= TOTAL_TEETH; position += 1) {
+        toothGrid.appendChild(makeToothButton(position));
+      }
+
+      responseButtons.forEach((button) => {
+        button.addEventListener('click', () => showNpcResponse(Number(button.dataset.npcMove)));
+      });
+      resetButton.addEventListener('click', reset);
+    })();
+  </script>
+</body>
+</html>
