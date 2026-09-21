@@ -1,25 +1,278 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#15132c">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#15132c">
   <title>幻巧拼圖預測｜FF14 工具箱</title>
   <style>
-    :root{color-scheme:dark;--panel:rgba(32,27,63,.92);--line:rgba(224,188,255,.18);--text:#fff9ff;--muted:#b9accb;--gold:#ffd36f;--pink:#ff8bd4;--blue:#82d9ff;--green:#81e4bc;--red:#ff9c9c;--shadow:0 24px 80px rgba(0,0,0,.3)}
-    *{box-sizing:border-box}body{margin:0;min-width:320px;color:var(--text);font-family:"Segoe UI","Noto Sans TC","Microsoft JhengHei",sans-serif;line-height:1.5;background:radial-gradient(circle at 8% 2%,rgba(161,86,196,.28),transparent 29%),radial-gradient(circle at 94% 12%,rgba(55,123,194,.2),transparent 27%),linear-gradient(160deg,#100e22,#171536 58%,#0e0c1e)}body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.25;background-image:radial-gradient(rgba(255,211,111,.28) 1px,transparent 1px);background-size:28px 28px;mask-image:linear-gradient(to bottom,#000,transparent 72%)}button,select{font:inherit}.page{position:relative;width:min(1080px,calc(100% - 32px));margin:auto;padding:24px 0 50px}.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}.brand{display:flex;gap:12px;align-items:center}.mark{display:grid;place-items:center;width:42px;height:42px;border:1px solid rgba(255,211,111,.54);border-radius:14px;color:var(--gold);background:rgba(122,75,126,.3);font-size:22px}.brand small{display:block;color:var(--gold);font-size:10px;letter-spacing:.16em;font-weight:700}.brand strong{display:block;font-size:15px}.back{color:var(--blue);font-size:13px;text-decoration:none}.hero{margin-bottom:22px}.eyebrow{margin:0 0 7px;color:var(--gold);font-size:11px;letter-spacing:.14em;font-weight:700}h1{margin:0 0 9px;font-size:clamp(30px,6vw,50px);line-height:1.08;letter-spacing:-.04em}.hero p{max-width:730px;margin:0;color:var(--muted);font-size:14px}.layout{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(300px,.92fr);gap:18px;align-items:start}.panel{padding:clamp(18px,4vw,28px);border:1px solid var(--line);border-radius:24px;background:linear-gradient(145deg,rgba(40,32,77,.92),rgba(21,19,49,.9));box-shadow:var(--shadow)}.result{position:sticky;top:16px}h2{margin:0 0 7px;font-size:21px}.helper{margin:0 0 16px;color:var(--muted);font-size:13px}.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:15px}.controls label{color:var(--muted);font-size:13px}.select{min-height:40px;padding:0 11px;border:1px solid var(--line);border-radius:12px;color:var(--text);background:#211c45}.grid-wrap{padding:13px;border:1px solid rgba(255,211,111,.2);border-radius:20px;background:rgba(10,8,27,.35)}.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;max-width:560px;margin:auto;aspect-ratio:1}.cell{position:relative;border:1px solid rgba(224,188,255,.22);border-radius:8px;color:rgba(255,249,255,.36);background:linear-gradient(145deg,rgba(68,52,111,.76),rgba(33,28,68,.8));cursor:pointer;transition:.18s}.cell:hover{transform:translateY(-2px);border-color:var(--gold)}.cell:focus-visible,.action:focus-visible{outline:3px solid rgba(255,211,111,.86);outline-offset:2px}.cell.blocked{border-color:var(--red);color:#ffd0d0;background:rgba(135,54,79,.7)}.cell.opened{border-color:rgba(130,217,255,.65);color:var(--blue);background:rgba(39,85,119,.65)}.cell.sword{border-color:var(--gold);color:var(--gold);background:rgba(142,96,48,.72)}.cell.present{border-color:var(--green);color:var(--green);background:rgba(47,119,92,.68)}.cell.fox{border-color:var(--pink);color:var(--pink);background:rgba(139,61,118,.7)}.cell.recommend{box-shadow:0 0 0 2px rgba(130,217,255,.55),0 0 20px rgba(130,217,255,.28)}.cell span{display:block;font-size:clamp(17px,4vw,30px);font-weight:800;line-height:1}.cell small{display:block;font-size:8px;color:inherit}.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}.legend span{color:var(--muted);font-size:11px}.dot{display:inline-block;width:10px;height:10px;margin-right:4px;border-radius:3px;vertical-align:-1px}.bar{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:15px;color:var(--muted);font-size:13px}.bar strong{color:var(--gold);font-size:18px}.actions{display:flex;gap:8px;margin-top:15px}.action{min-height:40px;padding:0 13px;border:1px solid var(--line);border-radius:12px;color:var(--text);background:rgba(255,255,255,.05);cursor:pointer}.action.primary{border:0;color:#201531;background:linear-gradient(135deg,#ffd36f,#ff9cd9);font-weight:800}.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin:17px 0}.mini{padding:13px;border:1px solid var(--line);border-radius:15px;background:rgba(255,255,255,.04)}.mini strong{display:block;color:var(--gold);font-size:20px}.mini span{color:var(--muted);font-size:11px}.advice{padding:14px 15px;border:1px solid rgba(129,228,188,.25);border-radius:16px;color:#d8f9eb;background:rgba(71,142,121,.12);font-size:13px}.warning{margin-top:15px;padding:13px 14px;border:1px solid rgba(255,211,111,.22);border-radius:15px;color:#f8e7ba;background:rgba(142,96,48,.12);font-size:12px}.source{margin-top:18px;color:var(--muted);font-size:11px}.source a{color:var(--blue)}@media(max-width:760px){.page{width:min(100% - 22px,580px);padding-top:16px}.layout{grid-template-columns:1fr}.result{position:static}.panel{border-radius:20px}.grid{gap:4px}.cell{border-radius:6px}.cards{gap:6px}}
+    :root{color-scheme:dark;--panel:rgba(32,27,63,.92);--line:rgba(224,188,255,.18);--text:#fff9ff;--muted:#b9accb;--gold:#ffd36f;--pink:#ff8bd4;--blue:#82d9ff;--green:#81e4bc;--red:#ff9c9c;--purple:#d9b7ff;--shadow:0 24px 80px rgba(0,0,0,.3)}
+    *{box-sizing:border-box}
+    body{margin:0;min-width:320px;color:var(--text);font-family:"Segoe UI","Noto Sans TC","Microsoft JhengHei",sans-serif;line-height:1.5;background:radial-gradient(circle at 8% 2%,rgba(161,86,196,.28),transparent 29%),radial-gradient(circle at 94% 12%,rgba(55,123,194,.2),transparent 27%),linear-gradient(160deg,#100e22,#171536 58%,#0e0c1e)}
+    body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.25;background-image:radial-gradient(rgba(255,211,111,.28) 1px,transparent 1px);background-size:28px 28px;mask-image:linear-gradient(to bottom,#000,transparent 72%)}
+    button{font:inherit}
+    .page{position:relative;width:min(1120px,calc(100% - 32px));margin:auto;padding:24px 0 50px}
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:28px}.brand{display:flex;gap:12px;align-items:center}.mark{display:grid;place-items:center;width:42px;height:42px;border:1px solid rgba(255,211,111,.54);border-radius:14px;color:var(--gold);background:rgba(122,75,126,.3);font-size:22px}.brand small{display:block;color:var(--gold);font-size:10px;letter-spacing:.16em;font-weight:700}.brand strong{display:block;font-size:15px}.back{color:var(--blue);font-size:13px;text-decoration:none}.back:hover{color:var(--text)}
+    .hero{margin-bottom:21px}.eyebrow{margin:0 0 7px;color:var(--gold);font-size:11px;letter-spacing:.14em;font-weight:700}h1{margin:0 0 9px;font-size:clamp(30px,6vw,50px);line-height:1.08;letter-spacing:-.04em}.hero p{max-width:760px;margin:0;color:var(--muted);font-size:14px}
+    .layout{display:grid;grid-template-columns:minmax(0,1.18fr) minmax(300px,.82fr);gap:18px;align-items:start}.panel{padding:clamp(18px,4vw,28px);border:1px solid var(--line);border-radius:24px;background:linear-gradient(145deg,rgba(40,32,77,.92),rgba(21,19,49,.9));box-shadow:var(--shadow)}.result{position:sticky;top:16px}h2{margin:0 0 7px;font-size:21px}.helper{margin:0 0 16px;color:var(--muted);font-size:13px}
+    .board-head{display:flex;justify-content:space-between;align-items:end;gap:12px;margin-bottom:12px}.board-head h2{margin:0}.board-count{color:var(--muted);font-size:12px;text-align:right}.board-count strong{display:block;color:var(--gold);font-size:23px;line-height:1.1}
+    .grid-wrap{padding:12px;border:1px solid rgba(255,211,111,.2);border-radius:20px;background:rgba(10,8,27,.35)}.grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;max-width:650px;margin:auto}
+    .cell{position:relative;min-width:0;min-height:76px;padding:5px 3px 4px;border:1px solid rgba(224,188,255,.22);border-radius:9px;color:var(--text);background:linear-gradient(145deg,rgba(68,52,111,.76),rgba(33,28,68,.8));cursor:pointer;transition:.18s}.cell:hover{transform:translateY(-2px);border-color:var(--gold)}.cell:focus-visible,.choice-button:focus-visible,.action:focus-visible{outline:3px solid rgba(255,211,111,.86);outline-offset:2px}
+    .cell.recommend{box-shadow:0 0 0 2px rgba(130,217,255,.65),0 0 20px rgba(130,217,255,.28)}.cell.blocked{border-color:var(--red);background:rgba(135,54,79,.72)}.cell.auto-blocked{border-color:#c8d0dc;color:#111827;background:#aeb7c7;cursor:default}.cell.auto-blocked:hover{transform:none;border-color:#c8d0dc}.cell.opened{border-color:rgba(130,217,255,.65);background:rgba(39,85,119,.7)}.cell.sword{border-color:var(--gold);background:rgba(142,96,48,.72)}.cell.present{border-color:var(--green);background:rgba(47,119,92,.7)}.cell.fox{border-color:var(--pink);background:rgba(139,61,118,.7)}
+    .cell-number{position:absolute;top:4px;right:5px;color:rgba(255,249,255,.42);font-size:8px;font-weight:400}.cell-symbol{display:block;margin:5px 0 1px;font-size:clamp(18px,3vw,29px);font-weight:800;line-height:1}.cell-name{display:block;font-size:9px;color:inherit}.probability-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px 2px;margin-top:15px;text-align:left}.probability{overflow:hidden;color:var(--muted);font-size:clamp(6px,1.25vw,9px);line-height:1.3;white-space:nowrap}.probability.simple{grid-column:1/-1;text-align:center;margin-top:2px;color:#9eb0ff;font-size:clamp(12px,2.3vw,18px);font-weight:700}.probability b{font-weight:700}.probability.obstacle b{color:var(--red)}.probability.empty b{color:var(--blue)}.probability.sword b{color:var(--gold)}.probability.present b{color:var(--green)}.probability.fox b{color:var(--pink)}
+    .legend{display:flex;flex-wrap:wrap;gap:8px 13px;margin-top:14px}.legend span{color:var(--muted);font-size:11px}.dot{display:inline-block;width:10px;height:10px;margin-right:4px;border-radius:3px;vertical-align:-1px}.dot.obstacle{background:var(--red)}.dot.empty{background:var(--blue)}.dot.sword{background:var(--gold)}.dot.present{background:var(--green)}.dot.fox{background:var(--pink)}
+    .board-help{margin-top:14px;padding:12px 13px;border:1px solid rgba(130,217,255,.18);border-radius:14px;color:#d9f5ff;background:rgba(39,85,119,.16);font-size:12px}.board-help strong{color:var(--blue)}.hint-banner{margin-bottom:14px;padding:13px 15px;border:1px solid rgba(130,217,255,.38);border-radius:14px;color:#8ee8ff;background:rgba(20,112,137,.22);font-size:13px;text-align:center}.hint-banner strong{color:#d9f5ff}
+    .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin:16px 0}.stat{padding:13px;border:1px solid var(--line);border-radius:15px;background:rgba(255,255,255,.04)}.stat strong{display:block;color:var(--gold);font-size:22px;line-height:1.1}.stat span{color:var(--muted);font-size:11px}
+    .advice{padding:14px 15px;border:1px solid rgba(129,228,188,.25);border-radius:16px;color:#d8f9eb;background:rgba(71,142,121,.12);font-size:13px}.advice.is-error{border-color:rgba(255,156,156,.3);color:#ffd0d0;background:rgba(135,54,79,.16)}
+    .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}.action{min-height:40px;padding:0 13px;border:1px solid var(--line);border-radius:12px;color:var(--text);background:rgba(255,255,255,.05);cursor:pointer}.action:hover{border-color:var(--gold)}.action.primary{border:0;color:#201531;background:linear-gradient(135deg,#ffd36f,#ff9cd9);font-weight:800}.action:disabled{cursor:not-allowed;opacity:.35}
+    .note{margin-top:15px;padding:13px 14px;border:1px solid rgba(255,211,111,.22);border-radius:15px;color:#f8e7ba;background:rgba(142,96,48,.12);font-size:12px}.source{margin-top:18px;color:var(--muted);font-size:11px}.source a{color:var(--blue)}
+    .choice-backdrop{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:20px;background:rgba(7,5,18,.72);backdrop-filter:blur(7px)}.choice-backdrop[hidden]{display:none}.choice-modal{width:min(100%,380px);padding:20px;border:1px solid rgba(255,211,111,.3);border-radius:22px;background:linear-gradient(145deg,rgba(48,37,88,.98),rgba(21,19,49,.98));box-shadow:0 24px 80px rgba(0,0,0,.55)}.choice-head{display:flex;justify-content:space-between;align-items:start;gap:12px}.choice-head h2{margin:0}.choice-close{padding:3px 8px;border:1px solid rgba(185,172,203,.28);border-radius:9px;color:var(--muted);background:transparent;cursor:pointer}.choice-close:hover{color:var(--text);border-color:rgba(255,211,111,.58)}.choice-modal p{margin:7px 0 0;color:var(--muted);font-size:12px}.choice-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:17px}.choice-button{min-height:48px;padding:7px 8px;border:1px solid var(--line);border-radius:12px;color:var(--text);background:rgba(255,255,255,.05);cursor:pointer}.choice-button:hover{border-color:var(--gold);background:rgba(142,96,48,.22)}.choice-button .choice-icon{display:block;font-size:18px;line-height:1.1}.choice-button .choice-label{display:block;margin-top:2px;font-size:12px}.choice-button.clear{color:var(--muted)}
+    @media(max-width:820px){.layout{grid-template-columns:1fr}.result{position:static}.page{width:min(100% - 22px,580px);padding-top:16px}.panel{border-radius:20px}}
+    @media(max-width:520px){.grid{gap:3px}.cell{min-height:61px;border-radius:7px}.probability-list{margin-top:11px}.probability{font-size:6px}.cell-name{font-size:8px}.grid-wrap{padding:8px}.panel{padding:17px}.board-head{align-items:start}.board-count strong{font-size:20px}}
   </style>
 </head>
-<body><main class="page">
-  <header class="topbar"><div class="brand"><div class="mark">✦</div><div><small>FF14 QUICK TOOL</small><strong>幻巧拼圖預測</strong></div></div><a class="back" href="ffxiv-tools.html">← 工具首頁</a></header>
-  <section class="hero"><p class="eyebrow">幻巧拼圖預測</p><h1>記錄盤面，少走一步冤枉路。</h1><p>6×6 盤面、5 個障礙物、最多 11 次翻牌。這個頁面適合手機邊玩邊記錄，並用中心優先的資訊增益排序給出下一個建議位置。</p></section>
-  <div class="layout"><section class="panel"><h2>盤面記錄</h2><p class="helper">先選標記種類，再點格子。每格可以隨時重新標記。</p><div class="controls"><label for="mode">目前標記：</label><select class="select" id="mode"><option value="blocked">障礙物</option><option value="opened">空白／已翻開</option><option value="sword">劍</option><option value="present">寶箱</option><option value="fox">狐</option></select></div><div class="grid-wrap"><div class="grid" id="grid"></div></div><div class="legend"><span><i class="dot" style="background:var(--red)"></i>障礙物</span><span><i class="dot" style="background:var(--blue)"></i>空白</span><span><i class="dot" style="background:var(--gold)"></i>劍</span><span><i class="dot" style="background:var(--green)"></i>寶箱</span><span><i class="dot" style="background:var(--pink)"></i>狐</span></div><div class="bar"><span>翻牌行動</span><strong><span id="moves">0</span> / 11</strong></div><div class="actions"><button class="action primary" id="resetBtn">清除重來</button><button class="action" id="undoBtn">復原</button></div></section>
-    <aside class="panel result"><h2>目前判讀</h2><p class="helper">把已知資訊記好，下一格會以藍色外框標示。</p><div class="cards"><div class="mini"><strong id="blockedCount">0 / 5</strong><span>已知障礙物</span></div><div class="mini"><strong id="openCount">0</strong><span>已記錄翻牌</span></div><div class="mini"><strong id="unknownCount">36</strong><span>未標記格</span></div><div class="mini"><strong id="recommendCount">0</strong><span>推薦候選</span></div></div><div class="advice" id="advice">先標記兩個已知障礙物，或直接記錄你已翻出的格子。</div><div class="warning">這是獨立的盤面記錄／簡化資訊增益版；要使用包含社群 252 種盤面資料的完整 solver，請開啟下方連結。</div><p class="source"><a href="https://faux.joshuaen.com/" target="_blank" rel="noreferrer">開啟完整 Faux Hollows Solver ↗</a><br><a href="https://ff14.tw/tools/faux-hollows-foxes/index.html" target="_blank" rel="noreferrer">參考 ff14.tw 版本 ↗</a></p></aside>
+<body>
+  <main class="page">
+    <header class="topbar"><div class="brand"><div class="mark">✦</div><div><small>FF14 QUICK TOOL</small><strong>幻巧拼圖預測</strong></div></div><a class="back" href="ffxiv-tools.html">← 工具首頁</a></header>
+    <section class="hero"><p class="eyebrow">FAUX HOLLOWS · BOARD PREDICTOR</p><h1>點一下，直接看盤面機率。</h1><p>點擊盤面格子後，在彈窗選擇實際出現的牌種；系統會即時縮小符合的預定義盤面，並把每個未揭開格子的牌種機率直接標在格子上。</p></section>
+    <div class="layout">
+      <section class="panel">
+        <div class="board-head"><h2>盤面記錄</h2><div class="board-count">符合盤面<strong id="matchingCount">252 / 252</strong></div></div>
+        <p class="helper">開局前 1～2 次點擊會直接記為障礙物；完成後點擊格子，才會跳出牌種選擇彈窗。</p>
+        <div class="grid-wrap"><div class="grid" id="grid" aria-label="幻巧拼圖 6×6 盤面"></div></div>
+        <div class="legend" aria-label="牌種圖例"><span><i class="dot obstacle"></i>障礙物</span><span><i class="dot empty"></i>空格</span><span><i class="dot sword"></i>劍</span><span><i class="dot present"></i>寶箱</span><span><i class="dot fox"></i>狐候選</span></div>
+        <div class="board-help"><strong>操作：</strong>前 1～2 次點擊直接設定障礙物；在此之前格子只顯示障礙物機率。完成後會自動填入必定的障礙物，並顯示劍、寶箱與狐候選機率。</div>
+        <div class="actions"><button class="action primary" id="resetBtn" type="button">清除重來</button><button class="action" id="undoBtn" type="button">復原</button></div>
+      </section>
+      <aside class="panel result">
+        <div class="hint-banner">💡 <strong>提示：請先點擊兩個格子設定為障礙物，系統將自動判斷並填充剩餘的障礙物位置</strong></div>
+        <h2>目前判讀</h2><p class="helper">每次記錄都會重新計算符合的盤面與牌種機率。</p>
+        <div class="stats"><div class="stat"><strong id="matchingStat">252</strong><span>符合盤面數</span></div><div class="stat"><strong id="clickStat">11</strong><span>剩餘翻牌次數</span></div><div class="stat"><strong id="unknownStat">36</strong><span>未標記格</span></div><div class="stat"><strong id="recommendStat">0</strong><span>推薦候選格</span></div></div>
+        <div class="advice" id="advice">目前保留全部 252 種盤面；先標記兩個已知障礙物，機率會開始收斂。</div>
+        <div class="note">牌面資料包含 252 種預定義盤面。狐的位置在資料中以「狐候選」表示；找到狐後，再於彈窗標記為狐即可。</div>
+        <p class="source">資料參考：<a href="https://ff14.tw/tools/faux-hollows-foxes/index.html" target="_blank" rel="noreferrer">ff14.tw Faux Hollows Foxes 計算機 ↗</a></p>
+      </aside>
+    </div>
+  </main>
+
+  <div class="choice-backdrop" id="choiceModal" hidden>
+    <section class="choice-modal" role="dialog" aria-modal="true" aria-labelledby="choiceTitle">
+      <div class="choice-head"><div><h2 id="choiceTitle">選擇出現牌種</h2><p id="choiceHint">請選擇這一格實際出現的內容。</p></div><button class="choice-close" id="closeChoice" type="button" aria-label="關閉">×</button></div>
+      <div class="choice-grid">
+        <button class="choice-button" type="button" data-type="opened"><span class="choice-icon">○</span><span class="choice-label">空格</span></button>
+        <button class="choice-button" type="button" data-type="blocked"><span class="choice-icon">✕</span><span class="choice-label">障礙物</span></button>
+        <button class="choice-button" type="button" data-type="sword"><span class="choice-icon">⚔</span><span class="choice-label">劍</span></button>
+        <button class="choice-button" type="button" data-type="present"><span class="choice-icon">▣</span><span class="choice-label">寶箱</span></button>
+        <button class="choice-button" type="button" data-type="fox"><span class="choice-icon">🦊</span><span class="choice-label">狐</span></button>
+        <button class="choice-button clear" type="button" data-type="unknown"><span class="choice-icon">↺</span><span class="choice-label">清除標記</span></button>
+      </div>
+    </section>
   </div>
-</main>
-<script>
-  const labels={blocked:'障礙物',opened:'空白',sword:'劍',present:'寶箱',fox:'狐'};let cells=Array(36).fill('unknown'),history=[],recommend=[];const grid=document.getElementById('grid');
-  function remember(){history.push(cells.slice());if(history.length>40)history.shift()}
-  function neighbours(i){const r=Math.floor(i/6),c=i%6,out=[];for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){if(!dr&&!dc)continue;const rr=r+dr,cc=c+dc;if(rr>=0&&rr<6&&cc>=0&&cc<6)out.push(rr*6+cc)}return out}
-  function rank(){const known=cells.filter(x=>x!=='unknown').length;return cells.map((v,i)=>({i,v,score:v!=='unknown'?-999:(Math.abs(2.5-Math.floor(i/6))+Math.abs(2.5-i%6)) + (neighbours(i).filter(n=>cells[n]==='unknown').length?0:-1)})).filter(x=>x.v==='unknown').sort((a,b)=>a.score-b.score).slice(0,Math.min(3,Math.max(1,known?2:3))).map(x=>x.i)}
-  function render(){recommend=rank();grid.innerHTML='';cells.forEach((v,i)=>{const b=document.createElement('button');b.type='button';b.className='cell '+(v!=='unknown'?v:'')+(recommend.includes(i)?' recommend':'');b.setAttribute('aria-label',`${i+1} ${v==='unknown'?'未標記':labels[v]}`);b.innerHTML=`<span>${v==='unknown'?'·':({blocked:'×',opened:'○',sword:'⚔',present:'▣',fox:'🦊'}[v])}</span><small>${i+1}</small>`;b.onclick=()=>{remember();const mode=document.getElementById('mode').value;cells[i]=cells[i]===mode?'unknown':mode;render()};grid.appendChild(b)});const blocked=cells.filter(x=>x==='blocked').length,opened=cells.filter(x=>['opened','sword','present','fox'].includes(x)).length;document.getElementById('blockedCount').textContent=`${blocked} / 5`;document.getElementById('openCount').textContent=opened;document.getElementById('unknownCount').textContent=cells.filter(x=>x==='unknown').length;document.getElementById('recommendCount').textContent=recommend.length;document.getElementById('moves').textContent=opened;let msg=blocked>=5?'5 個障礙物已記錄；接著記下劍、寶箱與狐的位置。':opened>=11?'已達 11 次翻牌上限，請整理已找到的目標。':`下一步可優先點選：${recommend.map(i=>i+1).join('、')} 格（藍框）。`;if(cells.includes('fox'))msg='已標記狐的位置；可以繼續補記其他目標。';document.getElementById('advice').textContent=msg;document.getElementById('undoBtn').disabled=!history.length}
-  document.getElementById('resetBtn').onclick=()=>{if(cells.some(x=>x!=='unknown')){remember();cells=Array(36).fill('unknown');render()}};document.getElementById('undoBtn').onclick=()=>{if(history.length){cells=history.pop();render()}};document.getElementById('mode').onchange=render;render();
-</script></body></html>
+
+  <script src="ffxiv-faux-hollows-data.js"></script>
+  <script>
+    (() => {
+      const TOTAL = 36;
+      const SIZE = 6;
+      const MAX_CLICKS = 11;
+      const DATA = FAUX_HOLLOWS_BOARD_DATA;
+      const TYPE_LABELS = { unknown: '未標記', blocked: '障礙物', opened: '空格', sword: '劍', present: '寶箱', fox: '狐' };
+      const SYMBOLS = { blocked: '✕', opened: '○', sword: '⚔', present: '▣', fox: '🦊' };
+      const TYPE_VALUES = { opened: 0, blocked: 1, sword: 2, present: 3, fox: 4 };
+      const VALUE_TYPES = { 0: 'opened', 1: 'blocked', 2: 'sword', 3: 'present', 4: 'fox' };
+      const PROBABILITY_TYPES = [
+        { key: 'blocked', short: '障' },
+        { key: 'opened', short: '空' },
+        { key: 'sword', short: '劍' },
+        { key: 'present', short: '寶' },
+        { key: 'fox', short: '狐' }
+      ];
+      const grid = document.getElementById('grid');
+      const choiceModal = document.getElementById('choiceModal');
+      const choiceTitle = document.getElementById('choiceTitle');
+      const choiceHint = document.getElementById('choiceHint');
+      const closeChoice = document.getElementById('closeChoice');
+      const matchingCount = document.getElementById('matchingCount');
+      const matchingStat = document.getElementById('matchingStat');
+      const clickStat = document.getElementById('clickStat');
+      const unknownStat = document.getElementById('unknownStat');
+      const recommendStat = document.getElementById('recommendStat');
+      const advice = document.getElementById('advice');
+      const state = Array(TOTAL).fill('unknown');
+      const history = [];
+      let selectedCell = null;
+
+      function boardValue(board, index) {
+        return board[Math.floor(index / SIZE)][index % SIZE];
+      }
+
+      function matches(board) {
+        return state.every((type, index) => type === 'unknown' || boardValue(board, index) === TYPE_VALUES[type]);
+      }
+
+      function getMatchingBoards() {
+        return DATA.filter(matches);
+      }
+
+      function getProbabilities(boards) {
+        const result = PROBABILITY_TYPES.reduce((all, type) => ({ ...all, [type.key]: Array(TOTAL).fill(0) }), {});
+        boards.forEach(board => {
+          for (let index = 0; index < TOTAL; index += 1) {
+            const type = VALUE_TYPES[boardValue(board, index)];
+            if (type) result[type][index] += 1;
+          }
+        });
+        return result;
+      }
+
+      function percent(value, total) {
+        return total ? Math.round(value / total * 100) : 0;
+      }
+
+      function recordState() {
+        history.push(state.slice());
+        if (history.length > 40) history.shift();
+      }
+
+      function getAutoObstacles(boards) {
+        if (state.filter(type => type === 'blocked').length < 2 || !boards.length) return new Set();
+        return new Set(state.map((type, index) => {
+          if (type !== 'unknown') return -1;
+          return boards.every(board => boardValue(board, index) === TYPE_VALUES.blocked) ? index : -1;
+        }).filter(index => index >= 0));
+      }
+
+      function currentRecommendations(probabilities, boards, obstacleConfirmed) {
+        if (!obstacleConfirmed || !boards.length) return [];
+        const candidates = state.map((type, index) => {
+          if (type !== 'unknown') return null;
+          const treasure = probabilities.sword[index] + probabilities.present[index] + probabilities.fox[index];
+          return { index, score: treasure / boards.length };
+        }).filter(Boolean).sort((a, b) => b.score - a.score);
+        if (!candidates.length) return [];
+        const top = candidates[0].score;
+        return candidates.filter(candidate => candidate.score >= top - .0001).slice(0, 3).map(candidate => candidate.index);
+      }
+
+      function probabilityMarkup(probabilities, index, total, obstacleConfirmed) {
+        if (!obstacleConfirmed) {
+          const value = percent(probabilities.blocked[index], total);
+          return value ? `<span class="probability obstacle simple" title="障礙物 ${value}%">${value}%</span>` : '';
+        }
+        const treasureLabels = { sword: '劍', present: '箱', fox: '宗長候選' };
+        return ['sword', 'present', 'fox'].map(key => {
+          const value = percent(probabilities[key][index], total);
+          if (!value) return '';
+          const label = treasureLabels[key];
+          return `<span class="probability ${key}" title="${TYPE_LABELS[key]} ${value}%"><b>${label}</b>${key === 'fox' ? '' : `: ${value}%`}</span>`;
+        }).join('');
+      }
+
+      function render(announce = true) {
+        const boards = getMatchingBoards();
+        const probabilities = getProbabilities(boards);
+        const obstacleConfirmed = state.filter(type => type === 'blocked').length >= 2;
+        const autoObstacles = getAutoObstacles(boards);
+        const recommendations = new Set(currentRecommendations(probabilities, boards, obstacleConfirmed));
+        grid.innerHTML = '';
+
+        state.forEach((type, index) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          const isAutoObstacle = type === 'unknown' && autoObstacles.has(index);
+          button.className = `cell ${isAutoObstacle ? 'auto-blocked' : type !== 'unknown' ? type : ''}${recommendations.has(index) ? ' recommend' : ''}`;
+          button.dataset.index = String(index);
+          button.setAttribute('aria-label', `第 ${index + 1} 格，${isAutoObstacle ? '已推定障礙物' : TYPE_LABELS[type]}`);
+          if (isAutoObstacle) {
+            button.innerHTML = `<span class="cell-number">${index + 1}</span><span class="cell-symbol">×</span><span class="cell-name">已判定障礙</span>`;
+          } else if (type === 'unknown') {
+            button.innerHTML = `<span class="cell-number">${index + 1}</span><div class="probability-list">${probabilityMarkup(probabilities, index, boards.length, obstacleConfirmed)}</div>`;
+          } else {
+            button.innerHTML = `<span class="cell-number">${index + 1}</span><span class="cell-symbol">${SYMBOLS[type]}</span><span class="cell-name">${TYPE_LABELS[type]}</span>`;
+          }
+          button.addEventListener('click', () => handleCellClick(index, autoObstacles));
+          grid.appendChild(button);
+        });
+
+        const revealed = state.filter(type => ['opened', 'sword', 'present', 'fox'].includes(type)).length;
+        const unknown = state.filter(type => type === 'unknown').length;
+        matchingCount.textContent = `${boards.length} / ${DATA.length}`;
+        matchingStat.textContent = String(boards.length);
+        clickStat.textContent = String(Math.max(0, MAX_CLICKS - revealed));
+        unknownStat.textContent = String(unknown);
+        recommendStat.textContent = String(recommendations.size);
+        advice.classList.toggle('is-error', boards.length === 0);
+
+        if (!boards.length) {
+          advice.textContent = '目前沒有符合的盤面，請復原上一個標記或清除衝突格子。';
+        } else if (!obstacleConfirmed) {
+          const obstacleNeeded = Math.max(0, 2 - state.filter(type => type === 'blocked').length);
+          advice.textContent = `目前只顯示障礙物機率；再設定 ${obstacleNeeded} 個障礙物後，會自動填入剩餘障礙物並顯示寶物機率。`;
+        } else if (revealed >= MAX_CLICKS) {
+          advice.textContent = `已記錄 ${MAX_CLICKS} 次翻牌；接著依照已知的劍、寶箱與狐整理結果。`;
+        } else if (autoObstacles.size) {
+          advice.textContent = `已自動判定 ${autoObstacles.size} 個剩餘障礙物；目前符合 ${boards.length} 種盤面。`;
+        } else if (recommendations.size) {
+          advice.textContent = `目前符合 ${boards.length} 種盤面；藍框是寶物候選機率最高的格子。`;
+        } else {
+          advice.textContent = `目前符合 ${boards.length} 種盤面；請先標記已知障礙物或翻牌結果。`;
+        }
+        document.getElementById('undoBtn').disabled = history.length === 0;
+      }
+
+      function openChoice(index) {
+        selectedCell = index;
+        choiceTitle.textContent = `第 ${index + 1} 格：選擇牌種`;
+        choiceHint.textContent = state[index] === 'unknown' ? '請選擇這一格實際出現的內容。' : `目前標記為「${TYPE_LABELS[state[index]]}」，可改成其他選項。`;
+        choiceModal.hidden = false;
+      }
+
+      function handleCellClick(index, autoObstacles) {
+        if (autoObstacles.has(index)) return;
+        const manualObstacleCount = state.filter(type => type === 'blocked').length;
+        if (state[index] === 'unknown' && manualObstacleCount < 2) {
+          recordState();
+          state[index] = 'blocked';
+          render();
+          return;
+        }
+        openChoice(index);
+      }
+
+      function closeModal() {
+        choiceModal.hidden = true;
+        selectedCell = null;
+      }
+
+      function setCellType(type) {
+        if (selectedCell === null) return;
+        if (type !== 'blocked') {
+          const revealed = state.filter(value => ['opened', 'sword', 'present', 'fox'].includes(value)).length;
+          if (state[selectedCell] === 'unknown' && revealed >= MAX_CLICKS) return;
+        }
+        recordState();
+        state[selectedCell] = type;
+        closeModal();
+        render();
+      }
+
+      document.querySelectorAll('.choice-button').forEach(button => button.addEventListener('click', () => setCellType(button.dataset.type)));
+      document.getElementById('resetBtn').addEventListener('click', () => {
+        if (state.some(type => type !== 'unknown')) recordState();
+        state.fill('unknown');
+        render();
+      });
+      document.getElementById('undoBtn').addEventListener('click', () => {
+        if (!history.length) return;
+        const previous = history.pop();
+        state.splice(0, state.length, ...previous);
+        render();
+      });
+      closeChoice.addEventListener('click', closeModal);
+      choiceModal.addEventListener('click', event => { if (event.target === choiceModal) closeModal(); });
+      document.addEventListener('keydown', event => { if (event.key === 'Escape' && !choiceModal.hidden) closeModal(); });
+      render(false);
+    })();
+  </script>
+</body>
+</html>

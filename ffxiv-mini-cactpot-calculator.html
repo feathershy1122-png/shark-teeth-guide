@@ -287,6 +287,38 @@
 
     .pad-actions { display: flex; justify-content: flex-end; margin-top: 9px; }
 
+    .number-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(7, 5, 18, .72);
+      backdrop-filter: blur(7px);
+    }
+
+    .number-modal-backdrop[hidden] { display: none; }
+
+    .number-modal {
+      width: min(100%, 360px);
+      padding: 20px;
+      border: 1px solid rgba(255, 211, 111, .3);
+      border-radius: 22px;
+      background: linear-gradient(145deg, rgba(48, 37, 88, .98), rgba(21, 19, 49, .98));
+      box-shadow: 0 24px 80px rgba(0, 0, 0, .55);
+    }
+
+    .number-modal-head { display: flex; align-items: start; justify-content: space-between; gap: 12px; }
+    .number-modal-head h2 { margin: 0; }
+    .number-modal-close { padding: 3px 8px; border: 1px solid rgba(185, 172, 203, .28); border-radius: 9px; color: var(--muted); background: transparent; cursor: pointer; }
+    .number-modal-close:hover { color: var(--text); border-color: rgba(255, 211, 111, .58); }
+    .number-modal p { margin: 7px 0 0; color: var(--muted); font-size: 12px; }
+    .number-modal .number-pad { grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 17px; }
+    .number-modal .number-button { min-height: 48px; font-size: 18px; }
+    .number-modal .pad-actions { justify-content: space-between; align-items: center; margin-top: 12px; }
+    .number-modal .pad-actions::before { content: "點選數字後會自動關閉"; color: var(--muted); font-size: 11px; }
+
     .utility-button {
       padding: 7px 10px;
       border: 1px solid rgba(185, 172, 203, .28);
@@ -435,14 +467,14 @@
 
     <section class="hero" aria-labelledby="page-title">
       <h1 id="page-title">下一格刮哪裡？</h1>
-      <p>點選九宮格，再輸入目前已刮出的數字。計算機會用「長期期望獎金最高」的策略，告訴你下一格該刮哪裡；四個數字齊後，再建議最佳路線。</p>
+      <p>點擊九宮格，在小彈窗選擇目前已刮出的數字。計算機會用「長期期望獎金最高」的策略，告訴你下一格該刮哪裡；四個數字齊後，再建議最佳路線。</p>
     </section>
 
     <div class="layout">
       <section class="panel input-panel" aria-labelledby="input-title">
         <div class="eyebrow">STEP 01</div>
         <h2 id="input-title">輸入已刮出的數字</h2>
-        <p class="helper">先輸入遊戲一開始顯示的數字。之後每刮開一格，就點該格並輸入新數字；1～9 不會重複。</p>
+        <p class="helper">先點擊遊戲一開始顯示的格子，再從彈窗選擇數字。之後每刮開一格，就點該格選擇新數字；1～9 不會重複。</p>
 
         <div class="grid-wrap">
           <div class="cactpot-grid" id="cactpotGrid" aria-label="仙人微彩九宮格">
@@ -463,9 +495,7 @@
           </div>
         </div>
 
-        <div class="input-status" id="inputStatus" aria-live="polite">請選一格，再輸入數字。</div>
-        <div class="number-pad" id="numberPad" aria-label="輸入數字"></div>
-        <div class="pad-actions"><button class="utility-button" id="clearCell" type="button">清除目前格</button></div>
+        <div class="input-status" id="inputStatus" aria-live="polite">點擊格子後，從彈窗選擇 1～9。</div>
       </section>
 
       <section class="panel result-panel" aria-labelledby="result-title">
@@ -517,6 +547,20 @@
     <footer>仙人微彩：1～9 各出現一次；先刮開3格，加上初始顯示格共4格，再選一條橫線、直線或斜線。</footer>
   </main>
 
+  <div class="number-modal-backdrop" id="numberModal" hidden>
+    <section class="number-modal" role="dialog" aria-modal="true" aria-labelledby="numberModalTitle">
+      <div class="number-modal-head">
+        <div>
+          <h2 id="numberModalTitle">選擇格子數字</h2>
+          <p id="numberModalHint">請選擇這一格顯示的數字。</p>
+        </div>
+        <button class="number-modal-close" id="closeNumberModal" type="button" aria-label="關閉">×</button>
+      </div>
+      <div class="number-pad" id="numberPad" aria-label="輸入數字"></div>
+      <div class="pad-actions"><button class="utility-button" id="clearCell" type="button">清除目前格</button></div>
+    </section>
+  </div>
+
   <script>
     (() => {
       const PAYOUTS = Object.freeze({
@@ -550,6 +594,9 @@
       const lineList = document.getElementById('lineList');
       const clearCellButton = document.getElementById('clearCell');
       const resetButton = document.getElementById('resetButton');
+      const numberModal = document.getElementById('numberModal');
+      const closeNumberModalButton = document.getElementById('closeNumberModal');
+      const numberModalHint = document.getElementById('numberModalHint');
       let selectedCell = 0;
       let memo = new Map();
 
@@ -646,6 +693,16 @@
       function setStatus(message, isError = false) {
         inputStatus.textContent = message;
         inputStatus.classList.toggle('is-error', isError);
+      }
+
+      function openNumberModal() {
+        numberModalHint.textContent = `目前選取「${CELL_NAMES[selectedCell]}」格${state[selectedCell] ? `，目前是 ${state[selectedCell]}` : ''}。`;
+        numberModal.hidden = false;
+        updatePad();
+      }
+
+      function closeNumberModal() {
+        numberModal.hidden = true;
       }
 
       function updatePad() {
@@ -749,6 +806,7 @@
         calculate();
         const valueText = state[index] ? `目前是 ${state[index]}` : '尚未輸入';
         setStatus(`已選取「${CELL_NAMES[index]}」格，${valueText}。`);
+        openNumberModal();
       }
 
       function setNumber(number) {
@@ -764,11 +822,13 @@
         state[selectedCell] = number;
         const nextBlank = state.findIndex((value) => value === 0);
         if (nextBlank >= 0) selectedCell = nextBlank;
+        closeNumberModal();
         calculate();
       }
 
       function clearSelectedCell() {
         state[selectedCell] = 0;
+        closeNumberModal();
         calculate();
         setStatus(`已清除「${CELL_NAMES[selectedCell]}」格，請重新輸入。`);
       }
@@ -776,6 +836,7 @@
       function reset() {
         state.fill(0);
         selectedCell = 0;
+        closeNumberModal();
         calculate();
         setStatus('已全部清除，請選一格並輸入第一個數字。');
       }
@@ -795,10 +856,16 @@
         button.addEventListener('click', () => selectCell(Number(button.dataset.cell)));
       });
       clearCellButton.addEventListener('click', clearSelectedCell);
+      closeNumberModalButton.addEventListener('click', closeNumberModal);
+      numberModal.addEventListener('click', (event) => {
+        if (event.target === numberModal) closeNumberModal();
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !numberModal.hidden) closeNumberModal();
+      });
       resetButton.addEventListener('click', reset);
       calculate();
     })();
   </script>
 </body>
 </html>
-
